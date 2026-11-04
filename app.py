@@ -1,7 +1,7 @@
 """CASPIANX | WELL INTELLIGENCE - Streamlit prototype.
 
-Reference dataset: Equinor Volve production data (NOT SOCAR operational data).
-Run with:  streamlit run app.py
+Reference dataset: Equinor Volve production data (not SOCAR operational data).
+Run with: streamlit run app.py
 """
 from __future__ import annotations
 
@@ -112,6 +112,7 @@ def load_pipeline(file_bytes: bytes | None, path: str | None):
         "monthly": parse_monthly(monthly_raw),
         "quality": quality_report(daily_raw, clean),
         "kpis": wa.all_kpis(prod),
+        "dataset_label": "Equinor Volve production data",
     }
 
 
@@ -195,7 +196,7 @@ def page_dashboard(D):
         disp = status.rename(columns={"overall": "status"})
         st.dataframe(style_status(disp), width="stretch", hide_index=True)
     st.caption("Status uses the illustrative thresholds configured on the Engineering Monitoring page. "
-               "Data source: Equinor Volve production data (public reference dataset, not SOCAR data).")
+               f"Data source: {D.get('dataset_label', 'production dataset')}; not SOCAR operational data.")
 
 
 def page_explorer(D):
@@ -498,7 +499,7 @@ def page_insights(D):
 
     with tab3:
         q = D["quality"]
-        st.markdown(f"**Source:** `{DATA_FILENAME}` - Equinor Volve Data Village. Daily rows: {q['rows']:,} "
+        st.markdown(f"**Source:** {D.get('dataset_label', DATA_FILENAME)}. Daily rows: {q['rows']:,} "
                     f"({q['date_min'].date()} to {q['date_max'].date()}); monthly sheet: {len(D['monthly'])} well-months.")
         st.markdown("**Findings computed from the file**")
         st.markdown(
@@ -537,8 +538,7 @@ with st.sidebar:
     st.markdown("---")
     page = st.radio("Navigation", list(PAGES.keys()), label_visibility="collapsed")
     st.markdown("---")
-    st.caption("Reference data: Equinor Volve field (North Sea). Not SOCAR operational data. "
-               "Prototype for SOCAR & Caspian AI Institute Hackathon 2026.")
+    st.caption("Reference dataset: Equinor Volve field (North Sea). Not SOCAR operational data.")
 
 try:
     data = get_data()
